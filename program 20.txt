@@ -1,0 +1,55 @@
+def catMouseGame(graph):
+    # Memoization dictionary for (mouse_pos, cat_pos, turn) -> result
+    memo = {}
+
+    # Helper function to perform DFS with memoization
+    def dfs(mouse, cat, turn):
+        # Base case: If the mouse reaches the hole, the mouse wins
+        if mouse == 0:
+            return 1
+        # Base case: If the cat catches the mouse, the cat wins
+        if mouse == cat:
+            return 2
+        # Check if the state has already been computed
+        if (mouse, cat, turn) in memo:
+            return memo[(mouse, cat, turn)]
+        
+        # If it's the mouse's turn (turn == 0)
+        if turn == 0:
+            result = 2  # Assume the cat wins by default (the worst case for the mouse)
+            for next_pos in graph[mouse]:
+                if next_pos != cat:  # Mouse cannot move to the same node as the cat
+                    result = min(result, dfs(next_pos, cat, 1))  # Minimize over all mouse's moves
+            # Save the result for this state
+            memo[(mouse, cat, turn)] = result
+            return result
+        # If it's the cat's turn (turn == 1)
+        else:
+            result = 1  # Assume the mouse wins by default (the worst case for the cat)
+            for next_pos in graph[cat]:
+                if next_pos != 0:  # Cat cannot move to the hole (node 0)
+                    result = max(result, dfs(mouse, next_pos, 0))  # Maximize over all cat's moves
+            # Save the result for this state
+            memo[(mouse, cat, turn)] = result
+            return result
+
+    # Start the DFS with the Mouse at node 1, Cat at node 2, and it's the Mouse's turn (turn = 0)
+    return dfs(1, 2, 0)
+
+# Example graph where each index represents a node, and the list at each index contains adjacent nodes
+graph = {
+    0: [1, 2],   # Hole (Node 0) is connected to Mouse (Node 1) and Cat (Node 2)
+    1: [0, 2],   # Mouse (Node 1) is connected to Hole (Node 0) and Cat (Node 2)
+    2: [0, 1],   # Cat (Node 2) is connected to Hole (Node 0) and Mouse (Node 1)
+}
+
+# Call the function
+result = catMouseGame(graph)
+
+# Display the result
+if result == 1:
+    print("Mouse wins!")
+elif result == 2:
+    print("Cat wins!")
+else:
+    print("Draw!")

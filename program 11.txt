@@ -1,0 +1,48 @@
+import sys
+
+# Number of cities (initially 4 cities, A, B, C, D, and then E)
+n = 5
+
+# Distance matrix (4 cities A, B, C, D, and now adding E)
+# Here we have added the distance from city E to the other cities.
+dist = [
+    [0, 10, 15, 20, 25],  # A
+    [10, 0, 35, 25, 30],  # B
+    [15, 35, 0, 30, 5],   # C
+    [20, 25, 30, 0, 15],  # D
+    [25, 30, 5, 15, 0]    # E
+]
+
+# Initialize DP table where dp[mask][i] means the minimum cost to visit
+# all cities specified in 'mask' and end at city 'i'
+dp = [[sys.maxsize] * n for _ in range(1 << n)]
+
+# Base case: Starting at city 0 (A), the cost is 0
+dp[1][0] = 0  # We are starting at city A, so the cost is 0
+
+# Function to solve TSP using DP and bitmasking
+def tsp(mask, pos):
+    # If all cities are visited, return the distance to the start city (city 0)
+    if mask == (1 << n) - 1:
+        return dist[pos][0]
+    
+    # If the solution is already computed, return it
+    if dp[mask][pos] != sys.maxsize:
+        return dp[mask][pos]
+    
+    # Recur for all unvisited cities
+    ans = sys.maxsize
+    for city in range(n):
+        if mask & (1 << city) == 0:  # If city is not visited
+            new_ans = dist[pos][city] + tsp(mask | (1 << city), city)
+            ans = min(ans, new_ans)
+    
+    # Store the result in the dp table
+    dp[mask][pos] = ans
+    return ans
+
+# Call the TSP function starting with city 0 (A) and visiting only city 0
+result = tsp(1, 0)
+
+# Print the minimum cost to visit all cities and return to the start city
+print("The minimum cost to visit all cities is:", result)

@@ -1,0 +1,21 @@
+def max_weight_greedy(weights, capacity):
+    # Step 1: Sort the items in decreasing order of weight
+    sorted_weights = sorted(weights, reverse=True)
+    
+    total_weight = 0
+    
+    # Step 2: Add items to the container until capacity is reached
+    for weight in sorted_weights:
+        if total_weight + weight <= capacity:
+            total_weight += weight
+        else:
+            break  # Stop if adding the item exceeds capacity
+    
+    return total_weight
+
+# Example usage
+weights = [3, 8, 5, 2, 4, 7]
+capacity = 15
+
+max_weight = max_weight_greedy(weights, capacity)
+print(f"The maximum weight that can be loaded into the container is: {max_weight}")

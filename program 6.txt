@@ -1,0 +1,30 @@
+def karatsuba(x, y):
+    # Base case for recursion: when the number is small enough
+    if x < 10 or y < 10:
+        return x * y
+    
+    # Determine the size of the numbers
+    n = max(len(str(x)), len(str(y)))
+    half = n // 2
+    
+    # Split the numbers into high and low parts
+    high_x, low_x = divmod(x, 10**half)
+    high_y, low_y = divmod(y, 10**half)
+    
+    # Recursively calculate three products
+    P1 = karatsuba(high_x, high_y)  # High part multiplication
+    P2 = karatsuba(low_x, low_y)    # Low part multiplication
+    P3 = karatsuba(high_x + low_x, high_y + low_y)  # Cross parts
+    
+    # Calculate the result using the Karatsuba formula
+    result = P1 * 10**(2 * half) + (P3 - P1 - P2) * 10**half + P2
+    return result
+
+# Given numbers
+X = 1234
+Y = 5678
+
+# Compute the product using Karatsuba
+Z = karatsuba(X, Y)
+
+print(f"The product of {X} and {Y} is {Z}")

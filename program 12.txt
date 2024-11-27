@@ -1,0 +1,31 @@
+def longestPalindrome(s: str) -> str:
+    # Helper function to expand around the center and find the longest palindrome
+    def expandAroundCenter(left: int, right: int) -> str:
+        while left >= 0 and right < len(s) and s[left] == s[right]:
+            left -= 1
+            right += 1
+        # Return the substring from left + 1 to right (since left and right have expanded one step too far)
+        return s[left + 1:right]
+    
+    if not s:
+        return ""
+    
+    longest = ""
+    
+    for i in range(len(s)):
+        # Expand around center for odd-length palindromes (single character center)
+        odd_palindrome = expandAroundCenter(i, i)
+        # Expand around center for even-length palindromes (two consecutive characters center)
+        even_palindrome = expandAroundCenter(i, i + 1)
+        
+        # Update longest if we find a longer palindrome
+        if len(odd_palindrome) > len(longest):
+            longest = odd_palindrome
+        if len(even_palindrome) > len(longest):
+            longest = even_palindrome
+    
+    return longest
+
+# Example usage:
+s = "babad"
+print(longestPalindrome(s))  # Output could be "bab" or "aba"

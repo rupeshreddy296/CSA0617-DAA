@@ -1,0 +1,42 @@
+import heapq
+
+def dijkstra(graph, source):
+    n = len(graph)  # Number of vertices in the graph
+    dist = [float('inf')] * n  # Initialize distances as infinity
+    dist[source] = 0  # Distance from source to itself is 0
+    visited = [False] * n  # Track visited vertices
+    
+    # Priority Queue to store (distance, vertex) pairs
+    pq = [(0, source)]  # Start with the source vertex (distance 0)
+    
+    while pq:
+        # Extract the vertex with the smallest distance
+        current_dist, u = heapq.heappop(pq)
+        
+        if visited[u]:
+            continue  # Skip if the vertex has already been visited
+        visited[u] = True
+        
+        # Update the distances to the neighbors of vertex u
+        for v in range(n):
+            if not visited[v] and graph[u][v] != float('inf'):
+                new_dist = current_dist + graph[u][v]
+                if new_dist < dist[v]:
+                    dist[v] = new_dist
+                    heapq.heappush(pq, (new_dist, v))
+    
+    return dist
+
+# Example usage:
+graph = [
+    [0, 1, 4, float('inf'), float('inf'), float('inf')],
+    [1, 0, 2, 6, float('inf'), float('inf')],
+    [4, 2, 0, 3, 5, float('inf')],
+    [float('inf'), 6, 3, 0, 2, 6],
+    [float('inf'), float('inf'), 5, 2, 0, 1],
+    [float('inf'), float('inf'), float('inf'), 6, 1, 0]
+]
+
+source = 0
+distances = dijkstra(graph, source)
+print(f"Shortest distances from vertex {source}: {distances}")

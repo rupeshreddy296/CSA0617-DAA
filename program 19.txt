@@ -1,0 +1,70 @@
+import numpy as np
+
+# Function to calculate the optimal binary search tree cost and structure
+def optimal_bst(keys, freq, n):
+    # Create cost and root matrices
+    cost = np.zeros((n, n))  # Stores the minimum cost of OBST for keys[i..j]
+    root = np.zeros((n, n), dtype=int)  # Stores the root of OBST for keys[i..j]
+
+    # Initialize the cost for single key trees (diagonal)
+    for i in range(n):
+        cost[i][i] = freq[i]
+        root[i][i] = i
+
+    # Build the OBST in a bottom-up manner
+    for length in range(2, n+1):  # length of the subarray (starting from 2 to n)
+        for i in range(n - length + 1):
+            j = i + length - 1
+            cost[i][j] = float('inf')
+            total_freq = sum(freq[i:j+1])  # Sum of frequencies from i to j
+
+            # Try every possible root r for the tree formed by keys[i..j]
+            for r in range(i, j+1):
+                # Calculate the cost of having r as the root
+                left_cost = cost[i][r-1] if r > i else 0
+                right_cost = cost[r+1][j] if r < j else 0
+                total_cost = left_cost + right_cost + total_freq
+
+                # If this is the minimum cost, update the cost and root matrices
+                if total_cost < cost[i][j]:
+                    cost[i][j] = total_cost
+                    root[i][j] = r
+
+    return cost, root
+
+# Function to print the optimal binary search tree (OBST)
+def print_optimal_bst(root, keys, i, j):
+    if i > j:
+        return
+    r = root[i][j]
+    print(keys[r], end=" ")  # Print the root
+    # Recursively print the left and right subtrees
+    print_optimal_bst(root, keys, i, r-1)
+    print_optimal_bst(root, keys, r+1, j)
+
+# Main function to execute the OBST algorithm
+def main():
+    keys = ['A', 'B', 'C', 'D']
+    frequencies = [0.1, 0.2, 0.4, 0.3]
+    n = len(keys)
+
+    # Compute the cost and root matrices
+    cost, root = optimal_bst(keys, frequencies, n)
+
+    # Print the resulting OBST and its cost
+    print("Optimal Binary Search Tree (OBST):")
+    print("Keys in the optimal BST (in order of traversal):")
+    print_optimal_bst(root, keys, 0, n-1)
+    
+    print("\nCost Matrix (cost[i][j] is the minimum cost for keys[i..j]):")
+    print(cost)
+
+    print("\nRoot Matrix (root[i][j] is the root index of keys[i..j]):")
+    print(root)
+
+    # The minimum cost for constructing the OBST for all keys
+    print(f"\nMinimum cost of the OBST: {cost[0][n-1]}")
+
+# Execute the main function
+if __name__ == "__main__":
+    main()

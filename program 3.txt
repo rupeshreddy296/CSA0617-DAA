@@ -1,0 +1,66 @@
+from itertools import combinations
+import bisect
+
+def get_subset_sums(arr):
+    """Returns a list of all possible subset sums for the given array."""
+    n = len(arr)
+    subset_sums = []
+    
+    # Generate all possible subsets and calculate their sums
+    for i in range(n + 1):
+        for comb in combinations(arr, i):
+            subset_sums.append(sum(comb))
+    
+    return subset_sums
+
+def meet_in_the_middle(arr, target):
+    """Finds the subset whose sum is closest to the target using Meet in the Middle."""
+    # Split the array into two halves
+    mid = len(arr) // 2
+    left_half = arr[:mid]
+    right_half = arr[mid:]
+    
+    # Get all possible subset sums for both halves
+    left_sums = get_subset_sums(left_half)
+    right_sums = get_subset_sums(right_half)
+    
+    # Sort the right subset sums for binary search
+    right_sums.sort()
+    
+    # Initialize the closest sum to infinity and the smallest difference
+    closest_sum = None
+    min_diff = float('inf')
+    
+    # For each sum in the left half, find the closest sum in the right half
+    for left_sum in left_sums:
+        # We want to find the closest right_sum to target - left_sum
+        complement = target - left_sum
+        
+        # Binary search for the best complement in the right_sums
+        idx = bisect.bisect_left(right_sums, complement)
+        
+        # Check the closest elements around the found index
+        if idx < len(right_sums):
+            right_sum = right_sums[idx]
+            total_sum = left_sum + right_sum
+            diff = abs(total_sum - target)
+            if diff < min_diff:
+                closest_sum = total_sum
+                min_diff = diff
+        
+        if idx > 0:
+            right_sum = right_sums[idx - 1]
+            total_sum = left_sum + right_sum
+            diff = abs(total_sum - target)
+            if diff < min_diff:
+                closest_sum = total_sum
+                min_diff = diff
+    
+    return closest_sum
+
+# Example usage
+arr = [1, 3, 9, 2, 7, 8, 4]
+target = 10
+
+result = meet_in_the_middle(arr, target)
+print(f"The subset sum closest to {target} is {result}")

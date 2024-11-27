@@ -1,0 +1,30 @@
+def wordBreak(s: str, wordDict: set) -> bool:
+    # Initialize the DP array where dp[i] indicates if s[0:i] can be segmented
+    dp = [False] * (len(s) + 1)
+    
+    # Base case: An empty string can always be segmented
+    dp[0] = True
+    
+    # Iterate through the string from index 1 to len(s)
+    for i in range(1, len(s) + 1):
+        # Check all possible substrings ending at i
+        for j in range(i):
+            # If s[j:i] is in the dictionary and dp[j] is True, then dp[i] is True
+            if dp[j] and s[j:i] in wordDict:
+                dp[i] = True
+                break
+    
+    # The result is whether dp[len(s)] is True (meaning the entire string can be segmented)
+    return dp[len(s)]
+
+# Example usage:
+wordDict = {"i", "like", "sam", "sung", "samsung", "mobile", "ice", "cream", "icecream", "man", "go", "mango"}
+s1 = "ilike"
+s2 = "ilikesamsung"
+s3 = "ilikesamsungmobile"
+s4 = "mangoicecream"
+
+print(wordBreak(s1, wordDict))  # Output: True ("i like")
+print(wordBreak(s2, wordDict))  # Output: True ("i like samsung")
+print(wordBreak(s3, wordDict))  # Output: True ("i like samsung mobile")
+print(wordBreak(s4, wordDict))  # Output: True ("mango ice cream")

@@ -1,0 +1,14 @@
+def uniquePaths(m, n):
+    # Create a 1D array to represent the number of paths
+    dp = [1] * n  # Initialize the first row, all values are 1 because there's only one way to move right.
+    
+    for i in range(1, m):  # Start from the second row
+        for j in range(1, n):  # Start from the second column
+            dp[j] += dp[j - 1]  # Update the current cell with the sum of paths from top and left
+            
+    return dp[n - 1]  # The result will be in the bottom-right corner (dp[n-1])
+
+# Example usage
+m = 3
+n = 7
+print(f"Number of unique paths: {uniquePaths(m, n)}")

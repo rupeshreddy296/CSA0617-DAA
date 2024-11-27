@@ -1,0 +1,85 @@
+import heapq
+
+# Helper function to find the root of a node in a disjoint-set
+def find(parent, node):
+    if parent[node] != node:
+        parent[node] = find(parent, parent[node])  # Path compression
+    return parent[node]
+
+# Helper function to union two sets in the disjoint-set
+def union(parent, rank, u, v):
+    root_u = find(parent, u)
+    root_v = find(parent, v)
+    
+    if root_u != root_v:
+        # Union by rank
+        if rank[root_u] > rank[root_v]:
+            parent[root_v] = root_u
+        elif rank[root_u] < rank[root_v]:
+            parent[root_u] = root_v
+        else:
+            parent[root_v] = root_u
+            rank[root_u] += 1
+
+# Kruskal's algorithm to find the MST
+def kruskal(vertices, edges):
+    # Sort the edges by weight
+    edges = sorted(edges, key=lambda x: x[2])
+    
+    parent = {v: v for v in vertices}
+    rank = {v: 0 for v in vertices}
+    mst = []
+    mst_weight = 0
+
+    # Iterate over edges and construct the MST
+    for u, v, weight in edges:
+        if find(parent, u) != find(parent, v):
+            mst.append((u, v, weight))
+            mst_weight += weight
+            union(parent, rank, u, v)
+
+    return mst, mst_weight
+
+# Function to check if the given MST is valid and if it is unique
+def check_mst_uniqueness(vertices, edges, given_mst):
+    # Step 1: Calculate MST using Kruskal's algorithm
+    mst, mst_weight = kruskal(vertices, edges)
+    
+    # Step 2: Check if the given MST matches the Kruskal's MST
+    given_mst_weight = sum(weight for u, v, weight in given_mst)
+    
+    # If the given MST weight doesn't match Kruskal's MST, it's not valid
+    if given_mst_weight != mst_weight:
+        return False, None
+    
+    # Step 3: Check if there's another MST with the same weight
+    # Remove each edge in the given MST and check if the MST weight remains the same
+    for edge in given_mst:
+        remaining_edges = [e for e in edges if e != edge]
+        remaining_mst, remaining_weight = kruskal(vertices, remaining_edges)
+        
+        if remaining_weight == mst_weight:
+            return False, remaining_mst  # Return another MST with the same weight
+    
+    return True, None  # The MST is unique
+
+# Example usage:
+edges = [
+    (0, 1, 10),
+    (0, 2, 5),
+    (1, 2, 2),
+    (1, 3, 1),
+    (2, 3, 3)
+]
+vertices = [0, 1, 2, 3]
+
+# Given MST (edge list form)
+given_mst = [(1, 3, 1), (2, 1, 2), (0, 2, 5)]
+
+# Check if the given MST is valid and unique
+is_unique, alternative_mst = check_mst_uniqueness(vertices, edges, given_mst)
+
+if is_unique:
+    print("The given MST is unique.")
+else:
+    print("The given MST is not unique. Another possible MST is:", alternative_mst)

@@ -1,0 +1,19 @@
+def numIdenticalPairs(nums):
+    # Initialize a dictionary to store the frequency of each number
+    count = {}
+    good_pairs = 0
+    
+    # Iterate through each number in the list
+    for num in nums:
+        if num in count:
+            # If the number has already appeared, it can form `count[num]` good pairs
+            good_pairs += count[num]
+        
+        # Increment the count for this number
+        count[num] = count.get(num, 0) + 1
+    
+    return good_pairs
+
+# Example usage
+nums = [1, 2, 3, 1, 1, 3]
+print(f"Number of good pairs: {numIdenticalPairs(nums)}")
